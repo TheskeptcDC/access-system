@@ -1,21 +1,27 @@
 #include <Arduino.h>
-#include "enroll/fingerprintSensor.h"
+#include "sensor/FingerprintSensor.h"
+#include "enroll/Enroll.h"
+#include "search/Search.h"
 
 void setup() {
   Serial.begin(115200);
   while (!Serial);
-  Serial.println("\nESP32 Fingerprint Enrollment");
+  Serial.println("ESP32 Fingerprint System");
   setupFingerprintSensor();
 }
 
 void loop() {
-  Serial.println("\nReady to enroll a new fingerprint!");
-  uint8_t id = readNumber();
-  if (id == 0) {
-    Serial.println("Invalid ID. Use a number from 1 to 127.");
-    return;
+  Serial.println("\nChoose Option:\n1 - Enroll\n2 - Search");
+  while (!Serial.available());
+  char option = Serial.read();
+  while (Serial.available()) Serial.read();
+
+  if (option == '1') {
+    uint8_t id = readNumber();
+    enrollFingerprint(id);
+  } else if (option == '2') {
+    searchFingerprint();
   }
-  Serial.print("Enrolling ID #");
-  Serial.println(id);
-  while (!enrollFingerprint(id));
+
+  delay(2000);
 }
